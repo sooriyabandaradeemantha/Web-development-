@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>The World Complexed</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        canvas {
+            display: block;
+            background: linear-gradient(#222, #111);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 960;
+        canvas.height = 540;
+
+        let keys = {};
+        let gravity = 0.6;
+        let score = 0;
+        let health = 3;
+        let zone = 0;
+        const camera = { x: 0 };
+
+        class Entity {
+            constructor(x, y, w, h, color) {
+                this.x = x; this.y = y;
+                this.width = w; this.height = h;
+                this.color = color;
+                this.velX = 0; this.velY = 0;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+            }
+        }
+
+        class Player extends Entity {
+            constructor() {
+                super(100, 100, 40, 60, 'deepskyblue');
+                this.speed = 5;
+                this.jumpPower = -15;
+                this.grounded = false;
+            }
+            update(platforms) {
+                this.velY += gravity;
+                this.grounded = false;
+
+                for (let p of platforms) {
+                    if (
+                        this.x < p.x + p.width &&
+                        this.x + this.width > p.x &&
+                        this.y + this.height < p.y + p.height &&
+                        this.y + this.height + this.velY >= p.y
+                    ) {
+                        this.grounded = true;
+                        this.velY = 0;
+                        this.y = p.y - this.height;
+                    }
+                }
+
+                if (keys['ArrowLeft']) this.velX = -this.speed;
+                else if (keys['ArrowRight']) this.velX = this.speed;
+                else this.velX = 0;
+
+                if (keys['Space'] && this.grounded) {
+                    this.velY = this.jumpPower;
+                    this.grounded = false;
+                }
+
+                this.x += this.velX;
+                this.y += this.velY;
+                this.draw();
+            }
+        }
+
+        class Platform extends Entity {
+            constructor(x, y, w, h) {
+                super(x, y, w, h, 'lime');
+            }
+        }
+
+        class Coin extends Entity {
+            constructor(x, y) {
+                super(x, y, 20, 20, 'gold');
+                this.collected = false;
+            }
+            checkCollect(player) {
+                if (
+                    !this.collected &&
+                    player.x < this.x + this.width &&
+                    player.x + player.width > this.x &&
+                    player.y < this.y + this.height &&
+                    player.y + player.height > this.y
+                ) {
+                    this.collected = true;
+                    score += 10;
+                }
+            }
+            draw() {
+                if (!this.collected) super.draw();
+            }
+        }
+
+        class Enemy extends Entity {
+            constructor(x, y) {
+                super(x, y, 40, 40, 'red');
+                this.direction = 1;
+                this.origin = x;
+            }
+            update() {
+                this.x += this.direction * 2;
+                if (this.x > this.origin + 100 || this.x < this.origin - 100) this.direction *= -1;
+                this.draw();
+            }
+            checkHit(player) {
+                if (
+                    player.x < this.x + this.width &&
+                    player.x + player.width > this.x &&
+                    player.y < this.y + this.height &&
+                    player.y + player.height > this.y
+                ) {
+                    health--;
+                    player.x = 100;
+                    player.y = 100;
+                    if (health <= 0) {
+                        alert('Game Over! Final Score: ' + score);
+                        document.location.reload();
+                    }
+                }
+            }
+        }
+
+        function loadZone(n) {
+            const platforms = [];
+            const coins = [];
+            const enemies = [];
+            const goal = new Entity(1500, 260, 50, 50, 'blue');
+
+            if (n === 0) {
+                platforms.push(new Platform(0, 500, 1600, 40));
+                platforms.push(new Platform(300, 400, 200, 20));
+                platforms.push(new Platform(700, 350, 200, 20));
+                platforms.push(new Platform(1100, 300, 200, 20));
+                coins.push(new Coin(320, 370));
+                coins.push(new Coin(720, 320));
+                coins.push(new Coin(1120, 270));
+                const e = new Enemy(900, 460); enemies.push(e);
+            }
+
+            if (n === 1) {
+                platforms.push(new Platform(0, 500, 1800, 40));
+                platforms.push(new Platform(400, 400, 150, 20));
+                platforms.push(new Platform(800, 350, 150, 20));
+                platforms.push(new Platform(1200, 300, 150, 20));
+                coins.push(new Coin(420, 370));
+                coins.push(new Coin(820, 320));
+                coins.push(new Coin(1220, 270));
+                const e = new Enemy(1000, 460); enemies.push(e);
+            }
+
+            if (n === 2) {
+                platforms.push(new Platform(0, 500, 2000, 40));
+                platforms.push(new Platform(500, 400, 100, 20));
+                platforms.push(new Platform(1000, 350, 100, 20));
+                platforms.push(new Platform(1500, 300, 100, 20));
+                coins.push(new Coin(520, 370));
+                coins.push(new Coin(1020, 320));
+                coins.push(new Coin(1520, 270));
+                const e = new Enemy(1300, 460); enemies.push(e);
+            }
+
+            return { platforms, coins, enemies, goal };
+        }
+
+        const player = new Player();
+        let { platforms, coins, enemies, goal } = loadZone(zone);
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            camera.x = player.x - canvas.width / 2;
+
+            for (let p of platforms) p.draw();
+            for (let c of coins) {
+                c.checkCollect(player);
+                c.draw();
+            }
+            for (let e of enemies) {
+                e.update();
+                e.checkHit(player);
+            }
+
+            player.update(platforms);
+            goal.draw();
+
+            if (
+                player.x < goal.x + goal.width &&
+                player.x + player.width > goal.x &&
+                player.y < goal.y + goal.height &&
+                player.y + player.height > goal.y
+            ) {
+                zone++;
+                if (zone > 2) {
+                    alert('You completed The World Complexed! Final Score: ' + score);
+                    document.location.reload();
+                } else {
+                    player.x = 100;
+                    player.y = 100;
+                    let next = loadZone(zone);
+                    platforms = next.platforms;
+                    coins = next.coins;
+                    enemies = next.enemies;
+                    goal = next.goal;
+                }
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 20, 30);
+            ctx.fillText('Health: ' + health, 20, 60);
+            ctx.fillText('Zone: ' + (zone + 1), 20, 90);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', (e) => keys[e.code] = true);
+        document.addEventListener('keyup', (e) => keys[e.code] = false);
+bou
+        gameLoop();
+    </script>
+</body>
+
+</html>
