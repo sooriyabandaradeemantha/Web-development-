@@ -67,14 +67,15 @@ background-attachment: scroll;
 body{
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #dfdfdf;
 }
 .topnav{
     overflow: hidden;
-    background-color: #333;
+    background-color: #031568;
 }
 .topnav a{
     float: left;
-color: #1affa3;
+color: #0091ff;
 text-align: center;
 padding: 14px 16px;
 text-decoration: none;
@@ -86,6 +87,6 @@ font-size: 17px;
 }
 
 .topnav a.active{
-    background-color: #ffe066;
-    color: black;
+    background-color: #000000;
+    color: rgb(255, 255, 255);
 }
