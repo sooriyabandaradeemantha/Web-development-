@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Darkweb Terminal</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: filter 300ms ease;
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            animation: flicker 2s infinite;
+        }
+
+        h1::before,
+        h1::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        h1::before {
+            color: red;
+            transform: translate(-3px, -2px);
+            animation: glitchTop 1.5s infinite alternate;
+        }
+
+        h1::after {
+            color: cyan;
+            transform: translate(3px, 2px);
+            animation: glitchBottom 1s infinite alternate;
+        }
+
+        @keyframes glitchTop {
+            0% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+
+            50% {
+                clip: rect(20px, 9999px, 60px, 0);
+            }
+
+            100% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+        }
+
+        @keyframes glitchBottom {
+            0% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+
+            50% {
+                clip: rect(40px, 9999px, 80px, 0);
+            }
+
+            100% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+        }
+
+        @keyframes flicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 1;
+            }
+
+            20%,
+            24%,
+            55% {
+                opacity: .25;
+            }
+        }
+
+        #terminal {
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 1rem;
+            border: 1px solid crimson;
+            width: 80%;
+            max-width: 650px;
+            height: 270px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+        }
+
+        #input {
+            width: 80%;
+            max-width: 650px;
+            margin-top: 8px;
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 0.5rem;
+            font-family: monospace;
+            outline: none;
+            z-index: 1;
+        }
+
+        /* Scanlines */
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 0px, transparent 2px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* VIRUS MODE */
+        body.virus {
+            color: #f33;
+            filter: contrast(1.3) saturate(1.4) hue-rotate(15deg);
+        }
+
+        body.virus #terminal {
+            border-color: #f33;
+            color: #f33;
+        }
+
+        body.virus h1 {
+            animation-duration: 1.2s;
+        }
+
+        body.virus .siren {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 0, 0, 0.3), transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(255, 0, 0, 0.25), transparent 40%);
+            mix-blend-mode: screen;
+            animation: pulse 0.8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: .4;
+            }
+
+            to {
+                opacity: .8;
+            }
+        }
+
+        /* Screen shake in virus mode */
+        body.virus .shake {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            animation: quake 0.2s infinite;
+        }
+
+        @keyframes quake {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(2px, -2px) rotate(0.2deg);
+            }
+
+            50% {
+                transform: translate(-2px, 2px) rotate(-0.2deg);
+            }
+
+            75% {
+                transform: translate(2px, 2px) rotate(0.1deg);
+            }
+
+            100% {
+                transform: translate(-2px, -2px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="matrix"></canvas>
+    <div class="shake" aria-hidden="true"></div>
+    <div class="siren" aria-hidden="true"></div>
+
+    <h1 id="title" data-text="SYSTEM STANDBY">SYSTEM STANDBY</h1>
+    <div id="terminal"></div>
+    <input id="input" placeholder="> type command (e.g., inject chaos.exe)" />
+
+    <script>
+        // Matrix rain with dynamic color
+        const canvas = document.getElementById("matrix");
+        const ctx = canvas.getContext("2d");
+        let rainColor = "#0f0"; // switches to red in virus mode
+
+        function resize() {
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+        }
+        resize(); window.addEventListener("resize", resize);
+
+        const symbols = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&";
+        const fontSize = 14;
+        let columns, drops;
+        function initRain() {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = Array(columns).fill(1);
+        }
+        initRain();
+
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.06)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = rainColor;
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const t = symbols.charAt(Math.floor(Math.random() * symbols.length));
+                ctx.fillText(t, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.97) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+
+        // Terminal + command handling
+        const terminal = document.getElementById("terminal");
+        const input = document.getElementById("input");
+        const title = document.getElementById("title");
+
+        const baseResponses = [
+            ">> Connecting to node...",
+            ">> Handshake complete.",
+            ">> Waiting for payload...",
+            ">> Listening on port :6666"
+        ];
+        const virusResponses = [
+            ">> chaos.exe injected",
+            ">> Encrypting directories...",
+            ">> Data corruption rising...",
+            ">> ALERT: darkweb relay active",
+            ">> WARNING: system integrity 12%"
+        ];
+
+        function log(line) {
+            const p = document.createElement("p");
+            p.textContent = line;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Virus mode activator
+        let virusActive = false;
+        function activateVirusMode() {
+            if (virusActive) return;
+            virusActive = true;
+
+            document.body.classList.add("virus");
+            title.dataset.text = "VIRUS DEPLOYED";
+            title.textContent = "VIRUS DEPLOYED";
+            rainColor = "#f33"; // turn matrix rain red
+
+            log(">> chaos.exe injected");
+            log(">> SYSTEM OVERRIDE engaged");
+            log(">> Redirecting traffic to dark node...");
+            log(">> DO NOT INTERRUPT PROCESS");
+
+            // Optional: auto-escalation logs
+            const escalate = setInterval(() => {
+                log(virusResponses[Math.floor(Math.random() * virusResponses.length)]);
+                if (!virusActive) clearInterval(escalate);
+            }, 1200);
+        }
+
+        // Command parser
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const cmd = input.value.trim().toLowerCase();
+                if (!cmd) return;
+
+                log("> " + cmd);
+
+                // Trigger virus mode when chaos.exe is injected/ejected
+                if (cmd.includes("chaos.exe") && (cmd.includes("inject") || cmd.includes("eject"))) {
+                    activateVirusMode();
+                } else if (virusActive) {
+                    log(virusResponses[Math.floor(Math.random() * virusResponses.length)]);
+                } else {
+                    log(baseResponses[Math.floor(Math.random() * baseResponses.length)]);
+                }
+                input.value = "";
+            }
+        });
+
+        // Startup logs
+        [">> Booting terminal...", ">> System standby.", ">> Awaiting command..."].forEach(log);
+    </script>
+</body>
+
+</html>
