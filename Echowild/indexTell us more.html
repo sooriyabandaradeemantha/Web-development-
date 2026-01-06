@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>EchoAqua Tell Us More About You</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+ body {
+    background-color: #012E40;
+    cursor: url('Pste pure2.png') 0 0, auto;
+}
+
+
+
+
+
+
+
+        @keyframes colorChange {
+            0% {
+                background-color: #00CED1;
+            }
+
+            25% {
+                background-color: #00CED1;
+            }
+
+            50% {
+                background-color: #5F9EA0;
+            }
+
+            75% {
+                background-color: #008080;
+            }
+
+            100% {
+                background-color: #008B8B;
+            }
+        }
+
+        .btn-animated {
+            color: white;
+            animation: colorChange 5s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1 style="font-size: large; color: #0ff; font-family: 'Courier New', Courier, monospace;">
+            EchoAqua tell us more about <strong>you</strong>
+        </h1>
+    </center>
+
+    <!-- Gender -->
+    <p style="color:#0ff;">Select your gender</p>
+    <div style="color:#0ff;">
+        <input type="radio" id="Female" name="gender" value="Female"> Female<br>
+        <input type="radio" id="Male" name="gender" value="Male"> Male<br>
+        <input type="radio" id="Other" name="gender" value="Other"> Other
+    </div>
+<br><br><br>
+    <!-- Name -->
+    <p style="color:#0ff;">⦿ Enter full name</p>
+    <input type="text" id="nameInput" style="color:#012E40; border:6px inset #0ff; border-radius:20px;"
+        placeholder="Type full name">
+<br><br><br>
+    <!-- Birthday -->
+    <p style="color:#0ff;">⦿ Enter birthday!</p>
+    <input type="text" id="birthdayInput" maxlength="10"
+        style="color:#012E40; border:6px inset #0ff; border-radius:20px;" placeholder="DD/MM/YYYY">
+<br><br><br>
+
+
+<!-- gmail -->
+<p style="color:#0ff;">⦿ Enter Gmail(not using it to sign in! )</p>
+<input type="text" id="gmailInput" style="color:#012E40; border:6px inset #0ff; border-radius:20px;"
+    placeholder="Type Gmail">
+    <br><br><br>
+
+    <!-- Why -->
+    <p style="color:#0ff;">⦿ Why do you use EchoAqua?</p>
+    <div style="color:#0ff;">
+        <input type="radio" name="why" value="Study"> For study<br>
+        <input type="radio" name="why" value="Business"> For business<br>
+        <input type="radio" name="why" value="Other"> Other reasons
+    </div>
+<br><br><br>
+    <!-- Who -->
+    <p style="color:#0ff;">⦿ Who are you?</p>
+    <div style="color:#0ff;">
+        <input type="radio" name="who" value="Kid"> Just a kid<br>
+        <input type="radio" name="who" value="Parent"> A parent<br>
+        <input type="radio" name="who" value="Other"> Other
+    </div>
+
+<br><br><br>
+    <p style="color:#0ff;">⦿ What is your goal</p>
+    <div style="color:#0ff;">
+        <input type="checkbox" name="goal" value="Developer"> Developer<br>
+        <input type="checkbox" name="goal" value="Explorer"> Explorer<br>
+        <input type="checkbox" name="goal" value="No goal"> No goal at this time<br>
+        <input type="checkbox" name="goal" value="Other"> Other goals
+    </div>
+
+
+    <center>
+        <button class="btn-animated"
+            style="border:5px inset #0ff; border-radius:20px; background-color:#012E40; color:#0ff;" id="submitBtn">
+            Submit info
+        </button>
+    </center>
+
+    <div class="container mt-4">
+        <h1 style="color:#00ffff;">EchoAqua</h1>
+        <div class="card" style="width:18rem; background-color:#012E40; border:9px solid #00ffff; border-radius:20px;">
+            <div class="card-body">
+                <h5 class="card-title" id="outputcard" style="color:#00ffff;">User Name</h5>
+                <p style="color:#00ffff;">
+                    Welcome, <span id="outputwelcomecard" style="font-weight:bolder;"></span>!
+                    Thank you for joining EchoAqua 🌊
+                </p>
+             
+                <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#profileModal"
+                    style="background-color:#012E40; color:#00ffff; border:4px solid #0ff; border-radius:20px;">
+                    See Profile!
+                </a>
+            </div>
+        </div>
+    </div>
+
+  
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color:#012E40; color:#00ffff;">
+                <div class="modal-header">
+                    <h5 class="modal-title" class="nameInput"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> <span id="profileName"></span></p>
+                    <p><strong>Gender:</strong> <span id="profileGender"></span></p>
+                    <p><strong>Birthday:</strong> <span id="profileBirthday"></span></p>
+                    <p><strong>Why EchoAqua:</strong> <span id="profileWhy"></span></p>
+                    <p><strong>Who:</strong> <span id="profileWho"></span></p>
+                    <p><strong>Goals:</strong> <span id="profileGoals"></span></p>
+              
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById("submitBtn").addEventListener("click", function () {
+            // Name
+            const name = document.getElementById("nameInput").value;
+            document.getElementById("outputcard").textContent = name;
+            document.getElementById("outputwelcomecard").textContent = name;
+
+            // Gender
+            const gender = document.querySelector('input[name="gender"]:checked')?.value || "Not selected";
+            document.getElementById("profileGender").textContent = gender;
+
+            // Birthday
+            const birthday = document.getElementById("birthdayInput").value;
+            document.getElementById("profileBirthday").textContent = birthday;
+
+            // Why
+            const why = document.querySelector('input[name="why"]:checked')?.value || "Not selected";
+            document.getElementById("profileWhy").textContent = why;
+
+            // Who
+            const who = document.querySelector('input[name="who"]:checked')?.value || "Not selected";
+            document.getElementById("profileWho").textContent = who;
+
+            // Goals
+            const goals = Array.from(document.querySelectorAll('input[name="goal"]:checked')).map(cb => cb.value).join(", ") || "None";
+            document.getElementById("profileGoals").textContent = goals;
+
+       
+ 
+
+            // Name in modal
+            document.getElementById("profileName").textContent = name;
+        });
+    </script>
+</body>
+
+</html>

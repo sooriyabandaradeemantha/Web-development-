@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Echowild</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+
+        input[type="file"] {
+            display: none;
+   
+        }
+
+
+
+        #preview {
+            margin-top: 20px;
+            max-width: 300px;
+            display: none;
+            border: 2px solid #012E40;
+            border-radius: 10px;
+        }
+
+        body {
+              cursor: url(icons8-cursor-96-removebg-preview\ \(3\).png) 1 1,auto;
+             
+            background-color: #012E40;
+        }
+
+        .glowtext {
+            text-shadow: 0 0 5px #fff, 0 0 5px #0ff, 0 0 10px rgb(154, 252, 252), 0 0 20px #0ff;
+            padding-left: 100px;
+        }
+
+        .container1 {
+
+            background-color: #00FFFF;
+            border-radius: 20px;
+            width: 40em;
+            box-shadow: 10px 10px 20px #55cfff;
+        }
+
+        .header {
+            font-size: 50px;
+        }
+
+        .pagination {
+            border-radius: 20px;
+        }
+
+        .pagination .page-link {
+            padding-bottom: 0.001px;
+            background-color: #012E40;
+            color: #0ff;
+            border-color: #55cfff;
+            border-width: 5px;
+            padding-right: 4.5em;
+            padding-left: 4.2em;
+
+        }
+
+        .pagination .page-link:hover {
+
+            background: linear-gradient(135deg, #00ffff, #7fffd4, #40e0d0);
+            color: #012E40;
+            text-shadow: 0 0 5px #fff, 0 0 10px #0ff, 0 0 15px #7fffd4, 0 0 20px #40e0d0;
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #7fffd4;
+            transition: all 0.3s ease-in-out;
+            border-color: #7fffd4;
+
+
+        }
+        
+
+    </style>
+</head>
+
+<body>
+
+
+
+
+
+
+
+    <div class="position-fixed">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="http://127.0.0.1:5500/Lesson/index.html">Papperonia</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="http://127.0.0.1:5500/Echowild/index0.html">Home</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Aqua</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="indexTell us more.html">tell us more about you</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Location</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Contact</a>
+            </li>
+        </ul>
+
+    </div>
+
+    <br>
+    <br>
+    <br>
+
+
+    <br>
+    <div class="container"
+        style="border: #00ffff; border-width: 8px; border-style: inset; border-radius: 20px; padding: 50px;">
+
+        <input type="text" id="userInput" placeholder="Be a member"
+            style="width: 17em; border-color: #0ff; border-radius: 20px; border-width: 5px; color: #012E40; font-weight: 500;">
+        <button onclick="displayInput()"
+            style="background-color: #012E40; color: #00FFFF; border-color: #0ff; border-width: 4px; border-radius: 20px;">Make
+            card for me </button>
+        <br>
+        <br>
+        <label for="fileUpload" class="custom-button" style="
+  background-color: #012E40;
+  color: #00FFFF;
+  border-color: #0ff;
+  border-width: 4px;
+  border-style:inset;
+  border-radius: 20px;
+">
+            .Change profile picture.
+        </label>
+        <input type="file" id="fileUpload" accept="image/*">
+
+
+        <br>
+<a href="http://127.0.0.1:5500/Echowild/indexsecret.html" class="btn btn"
+    style="background-color: #012E40; color: #012E40; border-color:#012E40; border-width: 4px; border-radius: 20px; cursor:default;"
+    style="color: #00ffff;">See Profile!</a>
+
+        <script>
+            document.getElementById('fileUpload').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.getElementById('preview');
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        </script>
+        <br>
+        <br>
+        <div class="container" style="border: #00ffff; border-width: 8px; border-style: inset; border-radius: 20px; ">
+            <h1 style="color: #00ffff; margin-right: 200px; width: 600px;">Members of EchoAqua</h1>
+
+            <p id="outputHeading" style="color: #00FFFF; margin-left: 20px;"></p>
+
+            <script>
+                function displayInput() {
+                    const input = document.getElementById("userInput").value;
+                    document.getElementById("outputHeading").textContent = input;
+                    document.getElementById("outputcard").textContent = input;
+                    document.getElementById("outputwelcomecard").textContent = input;
+                }
+            </script>
+
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        
+
+        <div class="container">
+            <h1 style="color: #00ffff;">EchoAqua</h1>
+            <div class="card"
+                style="width: 18rem; margin-left: 1px; background-color: #012E40 ; border-color: #00ffff; border-radius: 20px;  border-width: 9px;">
+                <img class="card-img-top" id="preview" alt="Image Preview">>
+                <div class="card-body">
+                    <h5 class="card-title" id="outputcard" style="color: #00ffff;">User Name</h5>
+                    <p>
+                        <span style="color: #00ffff;">Welocome, Mr/Mrs</span>
+                        <span id="outputwelcomecard" style="color: #00ffff; font-weight:bolder ;" ></span>
+                        <span style="color: #00ffff;">.We kindly welcome you to EchoAqua. The web that bring the world
+                            of imagine to the real world, Thank you for joining. Have a nice day!</span>
+                    </p>
+
+                    <a href="#" class="btn btn" onclick="alert('Sorry tell us more about you, by pressing the tell us more about you button & have a very nice day thank you for joining echo aqua. Thank you for your kindness. 🖋🙂')"
+                        style="background-color: #012E40; color: #00FFFF; border-color: #0ff; border-width: 4px; border-radius: 20px;"
+                        style="color: #00ffff;">See Profile!</a>
+                        <br><br>
+                        <a href="#" class="btn btn"
+                            onclick="alert('Hi this is ECHOAQUA, Thankyou for joining can you please submit the form of kindness and if you are willing to donate money please call to the tel num= 0718440518 I am DM please if you ar kind press the thumbs up button it is free I will be a paat of the form of kindness😞->💵->🥰!')"
+                            style="background-color: #012E40; color: #00FFFF; border-color: #0ff; border-width: 4px; border-radius: 20px;"
+                            style="color: #00ffff;">Talk with aqua DM</a>
+<br><br><br>
+                                                    <a href="#" class="btn btn"
+                                                        onclick=" prompt('The form of kindness😍😘🥰😘😥😉😍😘😊😊')"
+                                                        style="background-color: #ff00cc; color: #1e00ff; border-color: rgb(140, 0, 255); border-width: 4px; border-radius: 20px;"
+                                                        style="color: #ff0000;">❤💞💘💕The form of kindness❤💞💘💕</a>
+                        
+                </div>
+
+
+
+
+</body>
+
+
+</html>
