@@ -1,32 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to the world of JS</title>
+    <meta charset="UTF-8" />
+    <title>Class Period Monitor</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e4f5);
+cursor: url(icons8-cursor-96-removebg-preview\ \(3\).png) 1 1,auto;
+            margin: 0;
+            padding: 0px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+            display:inline;
+        }
+
+        p {
+            color: #555;
+        }
+
+        .summary {
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+
+        .search-btn {
+            background: #2c7be5;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background: #ff9800;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #fff;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        li:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        li.in {
+            background: #e6f4ea;
+        }
+
+        li.out {
+            background: #fde2e2;
+        }
+
+        button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .out-btn {
+            background: #e63757;
+            color: #fff;
+        }
+
+        .in-btn {
+            background: #2c7be5;
+            color: #fff;
+        }
+
+        .extra-btn {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .extra-btn.active {
+            background: #00d97e !important;
+        }
+    </style>
+
+    <link rel="icon" type="image/png" href="cropped_circle_image (9).png">
 </head>
+
 <body>
-    <h1>Welcome to the world of JS</h1>
-<button onclick="alert('Warning')">Press</button>
-<script>
+    
+    <div style="position: fixed; background-color:#f5dddd; width: 100%; ">
+        <h2>6D</h2>
+        <p>Attend Pro</p>
+        <p id="info"></p>
+        <button onclick="window.location.href='Adminlogin.html'"
+            style="color: #e6f4ea; background-color:#2c7be5; width: 200px;">
+            Admin
+        </button>
 
-function numsum(){
-let x,y,z;
+        <div class="summary" id="summary"></div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
 
-x = 60;
-y = 7;
-z = x+y;
+    <br>
+    <br>
+    <br>
 
-return z;
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h3>Student Roster</h3>
+    <ul id="roster"></ul>
 
-}
-  num = numsum();
- console.log('The sum of the numbers are' ,num)
-console.log(' 6   7')
+    <script>
 
 
-</script>
 
 
+
+ (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase = (...arguments) => { if (!window.chatbase.q) { window.chatbase.q = [] } window.chatbase.q.push(arguments) };window.chatbase=new Proxy(window.chatbase,{get(target, prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="L4_Se_ao0wRFXHnajvrzL";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load", onLoad)}})();
+   
+
+
+            // Save the time when the tab is about to close
+            window.addEventListener("beforeunload", function () {
+                const closeTime = new Date().toLocaleString();
+                localStorage.setItem("lastCloseTime", closeTime);
+            });
+
+            // When page loads, check if we have a stored close time
+            window.addEventListener("load", function () {
+                const lastClose = localStorage.getItem("lastCloseTime");
+                if (lastClose) {
+                    document.getElementById("info").textContent =
+                        "Last time you closed this tab was: " + lastClose;
+                } else {
+                    document.getElementById("info").textContent =
+                        "No close time recorded yet.";
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+ 
+        var d = 30;
+        const totalStudents = d;
+
+
+        const savedData = localStorage.getItem("studentsData");
+        let students = savedData ? JSON.parse(savedData) : [];
+
+      
+        function normalizeStudents() {
+           
+            if (!students || students.length === 0) {
+                students = [];
+                for (let i = 1; i <= totalStudents; i++) {
+                    students.push({
+                        id: i.toString(),
+                        name: i.toString(),
+                        status: "OUT",
+                        extras: {}
+                    });
+                }
+                saveData();
+                return;
+            }
+
+            students = students.map((s, idx) => ({
+                id: (s.id ?? (idx + 1).toString()).toString(),
+                name: (s.name ?? (idx + 1).toString()).toString(),
+                status: s.status === "IN" ? "IN" : "OUT",
+                extras: typeof s.extras === "object" && s.extras !== null ? s.extras : {}
+            }));
+
+         
+            if (students.length < totalStudents) {
+                const start = students.length + 1;
+                for (let i = start; i <= totalStudents; i++) {
+                    students.push({
+                        id: i.toString(),
+                        name: i.toString(),
+                        status: "OUT",
+                        extras: {}
+                    });
+                }
+            }
+
+            // If more than desired, trim
+            if (students.length > totalStudents) {
+                students = students.slice(0, totalStudents);
+            }
+
+            saveData();
+        }
+
+        const extraButtons = ["English Day Work", "Toilet", "Event Practice", "Teacher Said"];
+
+        function saveData() {
+            localStorage.setItem("studentsData", JSON.stringify(students));
+        }
+
+        function render() {
+            const rosterEl = document.getElementById("roster");
+            rosterEl.innerHTML = "";
+
+            students.forEach(s => {
+                const li = document.createElement("li");
+                li.className = s.status === "IN" ? "in" : "out";
+
+                const extraBtnsHTML = extraButtons
+                    .map(b => `<button class="extra-btn ${s.extras[b] ? "active" : ""}"
+                             onclick="toggleExtra('${s.id}','${b}',this)">${b}</button>`)
+                    .join("");
+
+                li.innerHTML = `
+            <span><strong>${s.name}</strong>  Should be -${s.status}</span>
+            <div>
+              <button class="${s.status === "OUT" ? "out-btn" : "in-btn"}"
+                      onclick="toggleStatus('${s.id}')">
+                ${s.status === "OUT" ? "Mark In" : "Mark Out"}
+              </button>
+
+
+              ${extraBtnsHTML}
+            </div>
+          `;
+                rosterEl.appendChild(li);
+            });
+
+            updateSummary();
+        }
+
+        function toggleStatus(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+            student.status = student.status === "OUT" ? "IN" : "OUT";
+            saveData();
+            render();
+        }
+
+        function toggleExtra(id, label, btn) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+
+
+            student.status = "OUT";
+
+          
+            if (btn.textContent === "Toilet") {
+                const activeToilets = document.querySelectorAll(".extra-btn.active");
+                let toiletCount = 0;
+                activeToilets.forEach(b => {
+                    if (b.textContent === "Toilet") toiletCount++;
+                });
+                if (toiletCount >= 5) {
+                    alert("⚠️ Please wait until the other students come ⏳ 🔊");
+                }
+            }
+
+         
+            student.extras[label] = !student.extras[label];
+            btn.classList.toggle("active");
+
+            saveData();
+            render();
+        }
+
+        function resetAll() {
+            students.forEach(s => {
+                s.status = "OUT";
+                s.extras = {};
+            });
+            saveData();
+            render();
+        }
+
+        function updateSummary() {
+            const inCount = students.filter(s => s.status === "IN").length;
+            const outCount = students.length - inCount;
+            document.getElementById("summary").textContent =
+                `OUT: ${outCount} | Currently IN: ${inCount}`;
+        }
+
+       
+        normalizeStudents();
+        render();
+    </script>
 </body>
+
 </html>
