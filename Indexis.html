@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>School Gate Pass</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 40px;
+            width: 480px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        h3 {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        button {
+            background: #4cafef;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #2196f3;
+            transform: scale(1.05);
+        }
+
+        input[type="number"],
+        input[type="password"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        #guardSection {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            /* hidden until password entered */
+        }
+
+        #expiredNotification {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            background: red;
+            border-radius: 8px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>School Gate Pass System</h2>
+
+        <!-- Teacher generates codes -->
+        <div id="studentSection">
+            <h3>Teacher Panel</h3>
+            <input type="number" id="timeInput" placeholder="Enter time in minutes">
+            <button onclick="generateCode()">Generate Code</button>
+            <p id="studentCode"></p>
+        </div>
+
+        <!-- Guard login -->
+        <div id="loginSection">
+            <h3>Guard Login</h3>
+            <input type="password" id="guardPassword" placeholder="Enter guard password">
+            <button onclick="checkPassword()">Login</button>
+            <p id="loginMessage"></p>
+        </div>
+
+        <!-- Guard side -->
+        <div id="guardSection">
+            <h3>Guard Panel</h3>
+            <p id="guardCode">No code yet</p>
+            <div id="expiredNotification"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentCode = null;
+        let expiryTime = null;
+        const correctPassword = "gate123"; // <-- Guard password
+
+        function generateCode() {
+            const minutes = parseInt(document.getElementById("timeInput").value);
+            if (isNaN(minutes) || minutes <= 0) {
+                alert("Please enter a valid time in minutes!");
+                return;
+            }
+            currentCode = Math.floor(1000 + Math.random() * 9000);
+            expiryTime = Date.now() + minutes * 60 * 1000;
+            document.getElementById("studentCode").innerText =
+                "Your exit code: " + currentCode + " (valid for " + minutes + " minutes)";
+            hideExpiredNotification();
+            showGuardCode();
+        }
+
+        function checkPassword() {
+            const entered = document.getElementById("guardPassword").value;
+            if (entered === correctPassword) {
+                document.getElementById("loginMessage").innerText = "✅ Access granted.";
+                document.getElementById("guardSection").style.display = "block";
+                showGuardCode();
+            } else {
+                document.getElementById("loginMessage").innerText = "❌ Wrong password!";
+            }
+        }
+
+        function showGuardCode() {
+            if (!currentCode) {
+                document.getElementById("guardCode").innerText = "No code yet";
+                return;
+            }
+            const now = Date.now();
+            if (now > expiryTime) {
+                document.getElementById("guardCode").innerText = "❌ Code expired";
+                showExpiredNotification();
+            } else {
+                const secondsLeft = Math.floor((expiryTime - now) / 1000);
+                document.getElementById("guardCode").innerText =
+                    "Current exit code: " + currentCode +
+                    " (expires in " + secondsLeft + "s)";
+            }
+        }
+
+        function showExpiredNotification() {
+            const notif = document.getElementById("expiredNotification");
+            notif.style.display = "block";
+            notif.innerText = "⚠️ " + currentCode + " is expired — WARNING WARNING!";
+        }
+
+        function hideExpiredNotification() {
+            document.getElementById("expiredNotification").style.display = "none";
+        }
+
+        setInterval(showGuardCode, 1000);
+    </script>
+</body>
+
+</html>
